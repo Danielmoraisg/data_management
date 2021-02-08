@@ -56,7 +56,10 @@ def app(state):
 					upload.seek(0)
 					state.data = pd.read_csv(upload)
 					#st.write(state.data.head(5))
-	st.write(state.data.head(5))
+	try:
+		st.write(state.data.head(5))
+	except:
+		st.write('Waiting...')
 	with st.beta_expander('Data Pre-Processing'):
 		if st.checkbox('Fill empty values ?'):
 			to_do_na = st.selectbox('Fill using:',('Numbers','Words','Dates'))
