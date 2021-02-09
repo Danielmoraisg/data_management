@@ -32,8 +32,10 @@ def app(state):
 				else:
 					state.data = pd.read_excel(data, sheet_name = sheet)
 					#st.write(state.data.head(5))
-			#options for plain text upload
+			
 			elif state.name.split('.')[1] == 'csv' or state.name.split('.')[1] == 'txt' :
+
+				#options for plain text upload
 				if st.checkbox('More options', value = False):
 					state.data = pd.read_csv(upload)
 					total = len(state.data)
@@ -50,18 +52,24 @@ def app(state):
 					upload.seek(0)
 					#st.write(pd.read_csv(upload))
 
-					#state.data = pd.read_csv(upload, skiprows = skip-1, header = header)[0:last]
+					state.data = pd.read_csv(upload, skiprows = skip-1, header = header)[0:last]
 					#st.write(state.data.head(5))
 				else:
 					upload.seek(0)
 					state.data = pd.read_csv(upload)
 					#st.write(state.data.head(5))
+	
+	#show begining of dataset
 	try:
 		st.write(state.data.head(5))
 	except:
 		st.write('Waiting...')
+
+	# Data pre processing
 	with st.beta_expander('Data Pre-Processing'):
-		if st.checkbox('Fill empty values ?'):
+
+		#deal with missing values
+		if st.checkbox('Fill empty values ?', value = True):
 			to_do_na = st.selectbox('Fill using:',('Numbers','Words','Dates'))
 			if to_do_na == 'Numbers':
 				new_val = st.number_input('Type the number', value = 0)
@@ -70,9 +78,25 @@ def app(state):
 			else:
 				new_val = st.date_input('Select date')
 			state.data.fillna(new_val)
+
+		#Change column name
+		if st.checkbox('Change column names ?', value  =  False):
+			new_columns = {}
+			for col in state.data.columns:
+				new_columns[col] = st.text_input("Column '%s' new name"%col, value = col)
+			state.data = state.data.rename(columns = new_columns)
+	
 	with st.beta_expander("See complete data"):
 		st.write(state.data)
 
+	with st.beta_expander("data visualisation"):
+		st.write("here we will put multiple plots to help visualise your data")
+	
+	with st.beta_expander("Prediciton"):
+		st.write('Here we will apply statistical modeling and artificial inteligence to create equations or to predict future values')
+	
+	with st.beta_expander('Report'):
+		st.write('Here we will display or download a full report on your data')
 	
 	
 
