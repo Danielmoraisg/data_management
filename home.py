@@ -7,7 +7,7 @@ def app(state):
 	upload = st.file_uploader('',accept_multiple_files = False)
 
 	if upload is not None:
-		with open(upload.read(),'rb') as rawdata:
+		with upload.read() as rawdata:
 			result = chardet.detect(rawdata.read(100000))
 			state.name = upload.name
 			if state.name.split('.')[1] == 'xlsx' or state.name.split('.')[1] == 'xls' :
