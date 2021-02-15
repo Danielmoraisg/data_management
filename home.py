@@ -77,8 +77,10 @@ def app(state):
 				new_val = st.text_input('Type the word')
 			else:
 				new_val = st.date_input('Select date')
-			state.data.fillna(new_val)
-
+			try:
+				state.data.fillna(new_val)
+			except:
+				st.write('Please upload your data')
 		#Change column name
 		if st.checkbox('Change column names ?', value  =  False):
 			new_columns = {}
