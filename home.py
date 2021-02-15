@@ -1,11 +1,14 @@
 import streamlit as st 
 import pandas as pd
-
+import chardet
 def app(state):
 	st.title('Upload your data')
 	st.write('Click the button below to add your dataset and check if your data is correct')
 	upload = st.file_uploader('',accept_multiple_files = False)
+
 	if upload is not None:
+		with open(upload.name,'rb') as rawdata:
+			result = chardet.detect(rawdata.read(100000))
 			state.name = upload.name
 			if state.name.split('.')[1] == 'xlsx' or state.name.split('.')[1] == 'xls' :
 				data = upload.read()
@@ -34,10 +37,10 @@ def app(state):
 					#st.write(state.data.head(5))
 			
 			elif state.name.split('.')[1] == 'csv' or state.name.split('.')[1] == 'txt' :
-
+				sep = st.text_input('What is the field separator ?', value = ',')
 				#options for plain text upload
 				if st.checkbox('More options', value = False):
-					state.data = pd.read_csv(upload)
+					state.data = pd.read_csv(upload, sep = sep, encoding = result['encoding'])
 					total = len(state.data)
 					if st.checkbox('Select first and last row of the dataset'):
 						skip = st.number_input('Beginning of the dataset', value = 1)
@@ -52,11 +55,14 @@ def app(state):
 					upload.seek(0)
 					#st.write(pd.read_csv(upload))
 
-					state.data = pd.read_csv(upload, skiprows = skip-1, header = header)[0:last]
+					state.data = pd.read_csv(upload, skiprows = skip-1, header = header, sep = sep, encoding = result['encoding'])[0:last]
 					#st.write(state.data.head(5))
 				else:
 					upload.seek(0)
-					state.data = pd.read_csv(upload)
+					try:
+						state.data = pd.read_csv(upload, sep = sep, encoding = result['encoding'])
+					except  pd.errors.ParserError:
+						st.write('Your separator is "%s" . It is problably wrong, open your file and check it. If it is ok file an issue. Sorry for the incovenience' %(sep))
 					#st.write(state.data.head(5))
 	
 	#show begining of dataset
