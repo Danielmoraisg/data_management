@@ -7,8 +7,6 @@ def app(state):
 	upload = st.file_uploader('',accept_multiple_files = False)
 
 	if upload is not None:
-		with upload.read() as rawdata:
-			result = chardet.detect(rawdata.read(100000))
 			state.name = upload.name
 			if state.name.split('.')[1] == 'xlsx' or state.name.split('.')[1] == 'xls' :
 				data = upload.read()
@@ -37,6 +35,7 @@ def app(state):
 					#st.write(state.data.head(5))
 			
 			elif state.name.split('.')[1] == 'csv' or state.name.split('.')[1] == 'txt' :
+				result = chardet.detect(upload.read(100000))
 				sep = st.text_input('What is the field separator ?', value = ',')
 				#options for plain text upload
 				if st.checkbox('More options', value = False):
