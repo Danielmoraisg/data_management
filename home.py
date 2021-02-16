@@ -1,11 +1,13 @@
 import streamlit as st 
 import pandas as pd
 import chardet
+import numpy as np
+
 def app(state):
 	st.title('Upload your data')
 	st.write('Click the button below to add your dataset and check if your data is correct')
 	upload = st.file_uploader('',accept_multiple_files = False)
-
+	state.data = pd.DataFrame(columns = ['vWMF9pPHn2'])
 	if upload is not None:
 			state.name = upload.name
 			if state.name.split('.')[1] == 'xlsx' or state.name.split('.')[1] == 'xls' :
@@ -65,9 +67,9 @@ def app(state):
 					#st.write(state.data.head(5))
 	
 	#show begining of dataset
-	try:
+	if 'vWMF9pPHn2' not in state.data.columns:
 		st.write(state.data.head(5))
-	except:
+	else:
 		st.write('Waiting...')
 
 	# Data pre processing
@@ -96,7 +98,80 @@ def app(state):
 	with st.beta_expander("See complete data"):
 		st.write(state.data)
 
-	with st.beta_expander("data visualisation"):
+	with st.beta_expander('Data transformation'):
+		def by_itself (column, operation):
+			if operation == 'Cosine':
+				return np.tan(state.data[column])
+			#elif operation == 'Tangent':
+				#return np.tan(state.data[column])
+			elif operation == 'Sine':
+				return np.sin(state.data[column])
+			elif operation == 'Natural logarithm':
+				return np.log(state.data[column])
+		
+		def by_number (column, operation):
+			if operation == 'sum':
+				number = st.number_input('what is the number', value = 2)
+				return state.data[column].apply(lambda x: x+number)
+			elif operation == 'logarithm':
+				base = st.number_input('what is the base', value = 10)
+				return np.log(state.data[column]) / np.log(base)
+			elif operation == 'root':
+				number =  st.number_input('what is the number of the root e.g., square root = 2', value = 2)
+				return state.data[column].apply(lambda x: x**(1/number))
+			elif operation == 'exponent':
+				number = st.number_input('what is the exponent', value = 2)
+				return state.data[column].apply(lambda x: x**number)
+			elif operation == 'multiplication':
+				number = st.number_input('what is the number', value = 2)
+				return state.data[column].apply(lambda x: x*number)
+			elif operation == 'division':
+				number = st.number_input('what is the number', value = 2)
+				return state.data[column].apply(lambda x: x/number)
+			elif operation == 'subtraction':
+				number = st.number_input('what is the number', value = 2)
+				return state.data[column].apply(lambda x: x-number)
+
+		def by_column(column_1, column_2):
+			if operations =='sum':
+				return state.data[column_1] + state.data[column_2]
+			elif operations == 'subtraction':
+				return state.data[column_1] - state.data[column_2]
+			elif operations == 'division':
+				return state.data[column_1] / state.data[column_2]
+			elif operations == 'multiplication':
+				return state.data[column_1] * state.data[column_2]
+			elif operations == 'exponent':
+				return state.data[column_1] ** state.data[column_2]
+			elif operations =='root':
+				return state.data[column_1] ** (1/state.data[column_2])
+			elif operations == 'logarithm':
+				return np.log(state.data[column_1]) / np.log(state.data[column_2])
+
+
+		if st.checkbox('Simple mathematical tranformations'):
+			transf_col = st.selectbox('select column to be tranformed',state.data.columns)
+			operations = ['sum','subtraction','division','multiplication','exponent','root','logarithm','Natural logarithm','Cosine','Sine']
+			operation_type = st.selectbox('Select type of operation',operations)
+			type_of_operations = ['Operation by a single number e.g., column + 4', 'Operation by other column element wise e.g., column 1 + column 2']
+			selection_of_type = st.selectbox('Which type of operation do you want?', type_of_operations)
+
+			if type_of_operations[0] == selection_of_type:
+				if operation_type in ['Natural logarithm','Cosine','Sine','Tengent']:
+					st.write(by_itself(transf_col,operation_type))
+				else:
+					st.write(by_number(transf_col,operation_type))
+			elif type_of_operations[1] == selection_of_type:
+				if operation_type in ['Natural logarithm','Cosine','Sine','Tengent']:
+					st.write('Operation not supported between columns')
+				else:
+					second_col = st.selectbox('select the column used in the operation',state.data.columns)
+					st.write(by_column(transf_col,second_col))
+
+
+#put new vector in the data
+
+	with st.beta_expander("Data visualisation"):
 		st.write("here we will put multiple plots to help visualise your data")
 	
 	with st.beta_expander("Prediciton"):
