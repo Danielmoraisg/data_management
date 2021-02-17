@@ -8,7 +8,8 @@ def app(state):
 	st.title('Upload your data')
 	st.write('Click the button below to add your dataset and check if your data is correct')
 	upload = st.file_uploader('',accept_multiple_files = False)
-	state.data = pd.DataFrame(columns = ['vWMF9pPHn2'])
+	placeholder_data = {'vWMF9pPHn2':'placeholder'}
+	state.data = pd.DataFrame(placeholder_data, columns = ['vWMF9pPHn2'])
 	if upload is not None:
 			state.name = upload.name
 			if state.name.split('.')[1] == 'xlsx' or state.name.split('.')[1] == 'xls' :
