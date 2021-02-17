@@ -88,18 +88,30 @@ def app(state):
 
 		#deal with missing values
 		if st.checkbox('Fill empty values ?', value = True):
-			to_do_na = st.selectbox('Fill using:',('Numbers','Words','Dates'))
-			if to_do_na == 'Numbers':
-				new_val = st.number_input('Type the number', value = 0)
-			elif to_do_na == 'Words':
-				new_val = st.text_input('Type the word')
-			else:
-				new_val = st.date_input('Select date')
-			try:
-				state.data.fillna(new_val)
-			except:
-				st.write('Please upload your data')
-		#Change column name
+			cols = []
+			for i in state.data.columns:
+				if st.checkbox('%s has missing values to tranform'%(i)):
+					cols.append(i)
+			for i in cols:
+				method = None
+				to_do_na = st.selectbox('Fill %s using:'%(i),('Numbers','Words','Dates','Previous value','Next value'), key = i)
+				if to_do_na == 'Numbers':
+					new_val = st.number_input('Type the number', value = 0, key = i)
+					state.data.fillna({i:new_val}, inplace = True)
+				elif to_do_na == 'Words':
+					new_val = st.text_input('Type the word', key = i)
+					state.data.fillna({i:new_val}, inplace = True)
+				elif to_do_na == 'Dates':
+					new_val = st.date_input('Select date', key = i)
+					state.data.fillna({i:new_val}, inplace = True)
+				elif to_do_na == 'Previous value':
+					method = 'ffill'
+					state.data[i].fillna(method = method, inplace = True)
+				elif to_do_na == 'Next value':
+					method = 'bfill'
+					state.data[i].fillna(method = method, inplace = True)
+
+			#Change column name
 		if st.checkbox('Change column names ?', value  =  False):
 			new_columns = {}
 			for col in state.data.columns:
