@@ -16,25 +16,25 @@ def by_itself (column, operation):
 
 def by_number (column, operation):
 	if operation == 'sum':
-		number = st.number_input('what is the number', value = 2)
+		number = st.number_input('what is the number', value = 2.0)
 		return column.apply(lambda x: x+number)
 	elif operation == 'logarithm':
-		base = st.number_input('what is the base', value = 10)
+		base = st.number_input('what is the base', value = 10.0)
 		return np.log(column) / np.log(base)
 	elif operation == 'root':
-		number =  st.number_input('what is the number of the root e.g., square root = 2', value = 2)
+		number =  st.number_input('what is the number of the root e.g., square root = 2', value = 2.0)
 		return column.apply(lambda x: x**(1/number))
 	elif operation == 'exponent':
-		number = st.number_input('what is the exponent', value = 2)
+		number = st.number_input('what is the exponent', value = 2.0)
 		return column.apply(lambda x: x**number)
 	elif operation == 'multiplication':
-		number = st.number_input('what is the number', value = 2)
+		number = st.number_input('what is the number', value = 2.0)
 		return column.apply(lambda x: x*number)
 	elif operation == 'division':
-		number = st.number_input('what is the number', value = 2)
+		number = st.number_input('what is the number', value = 2.0)
 		return column.apply(lambda x: x/number)
 	elif operation == 'subtraction':
-		number = st.number_input('what is the number', value = 2)
+		number = st.number_input('what is the number', value = 2.0)
 		return column.apply(lambda x: x-number)
 
 def by_column(column_1, column_2, operations):

@@ -105,33 +105,35 @@ def app(state):
 			for col in state.data.columns:
 				new_columns[col] = st.text_input("Column '%s' new name"%col, value = col)
 			state.data = state.data.rename(columns = new_columns)
-	
-	with st.beta_expander("See complete data"):
-		st.write(state.data)
-
+# Modify dataset
 	with st.beta_expander('Data transformation'):
 
-		if st.checkbox('Simple mathematical tranformations'):
-			type_of_operations = ['Operation by a single number e.g., column + 4', 'Operation by other column element wise e.g., column 1 + column 2']
+		if st.checkbox('Simple mathematical operations'):
+			type_of_operations = ['Operation using a single number e.g., column + 4', 'Operation using multiple columns element wise e.g., column 1 + column 2 + column 3']
 			selection_of_type = st.selectbox('Which type of operation do you want?', type_of_operations)
-			transf_col = st.selectbox('select column to be tranformed',state.data.columns)
 			operations = ['sum','subtraction','division','multiplication','exponent','root','logarithm','Natural logarithm','Cosine','Sine','Tangent']
 			operation_type = st.selectbox('Select type of operation',operations)
 
 			if type_of_operations[0] == selection_of_type:
+				transf_col = st.selectbox('select column to be used. You can only use columns with numbers',state.data.select_dtypes(exclude = 'O').columns)
 				if operation_type in ['Natural logarithm','Cosine','Sine','Tangent']:
 					st.write(by_itself(state.data[transf_col],operation_type))
 				else:
 					st.write(by_number(state.data[transf_col],operation_type))
 			elif type_of_operations[1] == selection_of_type:
+				N_cols_used = st.number_input('Select the number of columns that are going to be used', value = 2)
 				if operation_type in ['Natural logarithm','Cosine','Sine','Tangent']:
-					st.write('Operation not supported between columns')
+					st.write('Operation not supported between columns. Try "Operation using a single number"')
 				else:
-					second_col = st.selectbox('select the column used in the operation',state.data.columns)
-					st.write(by_column(state.data[transf_col],state.data[second_col], operation_type))
-
+					cols = []
+					for i in range(N_cols_used):
+						cols.append(st.selectbox('Column %i' %(i+1),[i for i in state.data.select_dtypes(exclude = 'O').columns if i not in cols]))
+					#second_col = st.selectbox('select the column used in the operation',state.data.select_dtypes(exclude = 'O').columns)
+					#st.write(by_column(state.data[transf_col],state.data[second_col], operation_type))
 
 #put new vector in the data
+	with st.beta_expander("See complete data"):
+		st.write(state.data)
 
 	with st.beta_expander("Data visualisation"):
 		st.write("here we will put multiple plots to help visualise your data")
