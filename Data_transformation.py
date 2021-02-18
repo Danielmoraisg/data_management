@@ -37,18 +37,22 @@ def by_number (column, operation):
 		number = st.number_input('what is the number', value = 2.0)
 		return column.apply(lambda x: x-number)
 
-def by_column(column_1, column_2, operations):
+def by_column(cols, operations):
 	if operations =='sum':
-		return column_1 + column_2
-	elif operations == 'subtraction':
-		return column_1 - column_2
-	elif operations == 'division':
-		return column_1 / column_2
-	elif operations == 'multiplication':
-		return column_1 * column_2
-	elif operations == 'exponent':
-		return column_1 ** column_2
-	elif operations =='root':
-		return column_1 ** (1/column_2)
-	elif operations == 'logarithm':
-		return np.log(column_1) / np.log(column_2)
+		return cols.sum(axis = 1)
+	else:
+		expression = ''
+		for i in cols:
+			#st.write(cols[i])
+			if operations == 'subtraction':
+				expression +="cols['%s']-"%i
+			elif operations == 'division':
+				expression +="cols['%s']/"%i
+			elif operations == 'multiplication':
+				expression +="cols['%s']*"%i
+			elif operations == 'exponent':
+				expression +="cols['%s']**"%i
+		if operations == 'exponent':
+			return eval(expression[:-2])
+		else:
+			return eval(expression[:-1])

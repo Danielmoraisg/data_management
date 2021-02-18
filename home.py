@@ -87,7 +87,8 @@ def app(state):
 	with st.beta_expander('Data Pre-Processing'):
 
 		#deal with missing values
-		if st.checkbox('Fill empty values ?', value = True):
+		st.write("**If you don't have missing values in your data you can uncheck the box bellow**" )
+		if st.checkbox('Fill empty values', value = True):
 			cols = []
 			for i in state.data.columns:
 				if st.checkbox('%s has missing values to tranform'%(i)):
@@ -129,19 +130,22 @@ def app(state):
 			if type_of_operations[0] == selection_of_type:
 				transf_col = st.selectbox('select column to be used. You can only use columns with numbers',state.data.select_dtypes(exclude = 'O').columns)
 				if operation_type in ['Natural logarithm','Cosine','Sine','Tangent']:
-					st.write(by_itself(state.data[transf_col],operation_type))
+					new_col = by_itself(state.data[transf_col],operation_type)
 				else:
-					st.write(by_number(state.data[transf_col],operation_type))
+					new_col = by_number(state.data[transf_col],operation_type)
 			elif type_of_operations[1] == selection_of_type:
 				N_cols_used = st.number_input('Select the number of columns that are going to be used', value = 2)
-				if operation_type in ['Natural logarithm','Cosine','Sine','Tangent']:
+				if operation_type in ['Natural logarithm','Cosine','Sine','Tangent','root','logarithm']:
 					st.write('Operation not supported between columns. Try "Operation using a single number"')
 				else:
 					cols = []
 					for i in range(N_cols_used):
 						cols.append(st.selectbox('Column %i' %(i+1),[i for i in state.data.select_dtypes(exclude = 'O').columns if i not in cols]))
-					#second_col = st.selectbox('select the column used in the operation',state.data.select_dtypes(exclude = 'O').columns)
-					#st.write(by_column(state.data[transf_col],state.data[second_col], operation_type))
+					new_col = by_column(state.data[cols],operation_type)
+			new_col_name = st.text_input('Name your new column. If there you name it as some existing column it will replace the old one', value = 'New')
+			state.data[new_col_name] = new_col
+		elif st.checkbox('Complex mathematical operations'):
+			st.write('**WORK IN PROGRESS**')
 
 #put new vector in the data
 	with st.beta_expander("See complete data"):
